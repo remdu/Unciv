@@ -564,6 +564,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 MapType.pangaea -> createPangea(tileMap)
                 MapType.continents -> createTwoContinents(tileMap)
                 MapType.perlin -> createPerlin(tileMap)
+                MapType.perlin2 -> createPerlin2(tileMap)
                 MapType.default -> generateLandCellularAutomata(tileMap)
             }
         }
@@ -586,6 +587,20 @@ class MapGenerator(val ruleset: Ruleset) {
             for (tile in tileMap.values) {
                 var elevation = getPerlinNoise(tile, elevationSeed)
 
+                when {
+                    elevation < 0 -> tile.baseTerrain = Constants.ocean
+                    else -> tile.baseTerrain = Constants.grassland
+                }
+            }
+        }
+
+        private fun createPerlin2(tileMap: TileMap) {
+            val elevationSeed = RNG.nextInt().toDouble()
+            for (tile in tileMap.values) {
+                var elevation = getDistortedPerlinNoise(tile, elevationSeed)
+                //elevation += 1.0
+                //elevation *= elevation
+                //elevation -= 1.0
                 when {
                     elevation < 0 -> tile.baseTerrain = Constants.ocean
                     else -> tile.baseTerrain = Constants.grassland
@@ -652,6 +667,26 @@ class MapGenerator(val ruleset: Ruleset) {
             val worldCoords = HexMath.hex2WorldCoords(tile.position)
             return Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
         }
+
+        private fun getDistortedPerlinNoise(tile: TileInfo, seed: Double,
+                                   nOctaves: Int = 6,
+                                   persistence: Double = 0.5,
+                                   lacunarity: Double = 2.05,
+                                   scale: Double = 10.0): Double {
+            val worldCoords = HexMath.hex2WorldCoords(tile.position)
+
+            var freqNoise = Perlin.noise3d(worldCoords.x.toDouble()+100.5, worldCoords.y.toDouble()+100.5, seed+100.5, 1, persistence, lacunarity, scale, 1.0)
+            var scaleNoise = (freqNoise+1.0)*scale
+            if (freqNoise < -1.0) {
+                println("exceptional -1.0 perlin output")
+            }
+            freqNoise *= 0.3
+            freqNoise += 0.3
+            println(freqNoise)
+
+            return Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scaleNoise, freqNoise)
+        }
+
 
         // region Cellular automata
         private fun generateLandCellularAutomata(tileMap: TileMap) {
