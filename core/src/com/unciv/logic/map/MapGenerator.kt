@@ -598,9 +598,6 @@ class MapGenerator(val ruleset: Ruleset) {
             val elevationSeed = RNG.nextInt().toDouble()
             for (tile in tileMap.values) {
                 var elevation = getDistortedPerlinNoise(tile, elevationSeed)
-                //elevation += 1.0
-                //elevation *= elevation
-                //elevation -= 1.0
                 when {
                     elevation < 0 -> tile.baseTerrain = Constants.ocean
                     else -> tile.baseTerrain = Constants.grassland
@@ -672,18 +669,16 @@ class MapGenerator(val ruleset: Ruleset) {
                                    nOctaves: Int = 6,
                                    persistence: Double = 0.5,
                                    lacunarity: Double = 2.05,
-                                   scale: Double = 10.0): Double {
+                                   scale: Double = 20.0): Double {
             val worldCoords = HexMath.hex2WorldCoords(tile.position)
 
             var noise = Perlin.noise3d(worldCoords.x.toDouble()+100.5, worldCoords.y.toDouble()+100.5, seed+100.5, 1, persistence, lacunarity, scale*20.0, 1.0)
             var lacunarityNoise = (noise*1.0+1.0)*lacunarity*0.7
-            if (noise < -1.0) {
-                println("exceptional -1.0 perlin output")
-            }
-            print("\nlacunarityNoise " + lacunarityNoise)
 
+            print("\nlacunarityNoise " + lacunarityNoise)
             noise = Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed-1000.5, 1, persistence, lacunarity, scale*20.0, 1.0)
             var persistenceNoise = (noise*1.0+1.0)*persistence
+            persistenceNoise = min(persistenceNoise, 0.5)
             print("\npersistenceNoise " + persistenceNoise)
 
             noise = Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed+733.1, 1, persistence, lacunarity, scale*20.0, 1.0)

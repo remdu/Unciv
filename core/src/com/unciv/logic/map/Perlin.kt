@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import kotlin.math.abs
 import kotlin.math.floor
 
 // version 1.1.3
@@ -66,7 +67,9 @@ object Perlin {
         var max = 0.0
         var total = 0.0
         for (i in 0 until nOctaves) {
-            total += amp * noise(x * freq / scale, y * freq / scale, z * freq / scale)
+            var value = noise(x * freq / scale, y * freq / scale, z * freq / scale)
+            value = abs(value)
+            total += amp * value
             max += amp
             freq *= lacunarity
             amp *= persistence
