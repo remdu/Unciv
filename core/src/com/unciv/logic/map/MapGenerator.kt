@@ -675,11 +675,9 @@ class MapGenerator(val ruleset: Ruleset) {
             var noise = Perlin.noise3d(worldCoords.x.toDouble()+100.5, worldCoords.y.toDouble()+100.5, seed+100.5, 1, persistence, lacunarity, scale*20.0)
             var lacunarityNoise = (noise*1.0+1.0)*lacunarity*0.7
 
-            print("\nlacunarityNoise " + lacunarityNoise)
             noise = Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed-1000.5, 1, persistence, lacunarity, scale*20.0)
             var persistenceNoise = (noise*1.0+1.0)*persistence
             persistenceNoise = min(persistenceNoise, 0.5)
-            print("\npersistenceNoise " + persistenceNoise)
 
             noise = Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed+733.1, 1, persistence, lacunarity, scale*20.0)
             var distortion_x = noise*150.0
