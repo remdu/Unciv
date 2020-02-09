@@ -60,9 +60,8 @@ object Perlin {
                       nOctaves: Int = 3,
                       persistence: Double = 0.5,
                       lacunarity: Double = 2.0,
-                      scale: Double = 10.0,
-                      in_freq: Double = 1.0): Double {
-        var freq = in_freq
+                      scale: Double = 10.0): Double {
+        var freq = 1.0
         var amp = 1.0
         var max = 0.0
         var total = 0.0
