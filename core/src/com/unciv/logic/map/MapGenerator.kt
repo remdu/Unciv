@@ -675,16 +675,32 @@ class MapGenerator(val ruleset: Ruleset) {
                                    scale: Double = 10.0): Double {
             val worldCoords = HexMath.hex2WorldCoords(tile.position)
 
-            var freqNoise = Perlin.noise3d(worldCoords.x.toDouble()+100.5, worldCoords.y.toDouble()+100.5, seed+100.5, 1, persistence, lacunarity, scale, 1.0)
-            var scaleNoise = (freqNoise+1.0)*scale
-            if (freqNoise < -1.0) {
+            var noise = Perlin.noise3d(worldCoords.x.toDouble()+100.5, worldCoords.y.toDouble()+100.5, seed+100.5, 1, persistence, lacunarity, scale*20.0, 1.0)
+            var lacunarityNoise = (noise*1.0+1.0)*lacunarity*0.7
+            if (noise < -1.0) {
                 println("exceptional -1.0 perlin output")
             }
-            freqNoise *= 0.3
-            freqNoise += 0.3
-            println(freqNoise)
+            print("\nlacunarityNoise " + lacunarityNoise)
 
-            return Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scaleNoise, freqNoise)
+            noise = Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed-1000.5, 1, persistence, lacunarity, scale*20.0, 1.0)
+            var persistenceNoise = (noise*1.0+1.0)*persistence
+            print("\npersistenceNoise " + persistenceNoise)
+
+            noise = Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed+733.1, 1, persistence, lacunarity, scale*20.0, 1.0)
+            var distortion_x = noise*150.0
+
+            noise = Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed-334.4, 1, persistence, lacunarity, scale*20.0, 1.0)
+            var distortion_y = noise*150.0
+
+            return Perlin.noise3d(
+                    worldCoords.x.toDouble() + distortion_x,
+                    worldCoords.y.toDouble() + distortion_y,
+                    seed,
+                    nOctaves,
+                    persistenceNoise,
+                    lacunarityNoise,
+                    scale,
+                    1.0)
         }
 
 

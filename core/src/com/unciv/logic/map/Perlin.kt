@@ -55,6 +55,25 @@ object Perlin {
         return total/max
     }
 
+    fun ridgedNoise3d(x: Double, y: Double, z: Double,
+                      nOctaves: Int = 3,
+                      persistence: Double = 0.5,
+                      lacunarity: Double = 2.0,
+                      scale: Double = 10.0,
+                      in_freq: Double = 1.0): Double {
+        var freq = in_freq
+        var amp = 1.0
+        var max = 0.0
+        var total = 0.0
+        for (i in 0 until nOctaves) {
+            total += amp * noise(x * freq / scale, y * freq / scale, z * freq / scale)
+            max += amp
+            freq *= lacunarity
+            amp *= persistence
+        }
+        return total/max
+    }
+
     fun noise(x: Double, y: Double, z: Double): Double {
         // Find unit cube that contains point
         val xi = floor(x).toInt() and 255
