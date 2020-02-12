@@ -599,7 +599,6 @@ class MapGenerator(val ruleset: Ruleset) {
             val elevationSeed = RNG.nextInt().toDouble()
             for (tile in tileMap.values) {
                 var elevation = getRidgedPerlinNoise(tile, elevationSeed)-0.25
-                //val elevation = getNormalWarpPerlinNoise(tile, elevationSeed)
                 when {
                     elevation < 0 -> tile.baseTerrain = Constants.ocean
                     else -> tile.baseTerrain = Constants.grassland
