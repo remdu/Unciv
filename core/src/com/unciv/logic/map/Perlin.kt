@@ -2,6 +2,8 @@ package com.unciv.logic.map
 
 import kotlin.math.floor
 import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 // version 1.1.3
 // From https://rosettacode.org/wiki/Perlin_noise#Kotlin
@@ -76,6 +78,34 @@ object Perlin {
             amp *= persistence
         }
         return total/max
+    }
+
+    fun normalWarpNoise3d(x: Double, y: Double, z: Double,
+                              nOctaves: Int = 3,
+                              persistence: Double = 0.5,
+                              lacunarity: Double = 2.0,
+                              scale: Double = 10.0,
+                              warpStrength: Double = 30.0) : Double {
+        var warpx = noise3d(x, y, z, nOctaves, persistence, lacunarity, scale)
+        var warpy = noise3d(x, y, z+1000.0, nOctaves, persistence, lacunarity, scale)
+        var warpz = noise3d(x, y, z+2000.0, nOctaves, persistence, lacunarity, scale)
+
+        val norm = sqrt(warpx.pow(2)+ warpy.pow(2)+warpz.pow(2))
+
+        if (norm > 0) {
+            warpx /= norm
+            warpy /= norm
+            warpz /= norm
+        }
+
+
+        val magnitude = noise3d(x,y,z+3000.0, nOctaves, persistence, lacunarity, scale)+1.0
+
+        warpx*=warpStrength*magnitude
+        warpy*=warpStrength*magnitude
+        warpz*=warpStrength*magnitude
+
+        return noise3d(x+warpx, y+warpy, z+warpz+4000.0, nOctaves, persistence, lacunarity, scale)
     }
 
     fun noise(x: Double, y: Double, z: Double): Double {
