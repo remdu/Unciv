@@ -566,6 +566,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 MapType.perlin -> createPerlin(tileMap)
                 MapType.archipelago -> createArchipelago(tileMap)
                 MapType.warpPerlin -> createWarpPerlin(tileMap)
+                MapType.diverseArchipelago -> createDiverseArchipelago(tileMap)
                 MapType.default -> generateLandCellularAutomata(tileMap)
             }
         }
@@ -610,6 +611,23 @@ class MapGenerator(val ruleset: Ruleset) {
             val elevationSeed = RNG.nextInt().toDouble()
             for (tile in tileMap.values) {
                 val elevation = getNormalWarpPerlinNoise(tile, elevationSeed)
+                when {
+                    elevation < 0 -> tile.baseTerrain = Constants.ocean
+                    else -> tile.baseTerrain = Constants.grassland
+                }
+            }
+        }
+
+        private fun createDiverseArchipelago(tileMap: TileMap) {
+            val elevationSeed1 = RNG.nextInt().toDouble()
+            val elevationSeed2 = RNG.nextInt().toDouble()
+            for (tile in tileMap.values) {
+                val noise1 = getNormalWarpPerlinNoise(tile, elevationSeed1, scale = 15.0)
+                val noise2 = getRidgedPerlinNoise(tile, elevationSeed2)
+
+                val weight = 4.0
+
+                val elevation = noise1 + noise2*weight-1.08
                 when {
                     elevation < 0 -> tile.baseTerrain = Constants.ocean
                     else -> tile.baseTerrain = Constants.grassland
