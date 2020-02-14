@@ -20,6 +20,7 @@ object MapType {
     const val archipelago = "Archipelago"
     const val warpPerlin = "warp perlin"
     const val diverseArchipelago = "Diverse Archipelago"
+    const val ZPerlin = "ZPerlin"
 
     // Cellular automata
     const val default = "Default"

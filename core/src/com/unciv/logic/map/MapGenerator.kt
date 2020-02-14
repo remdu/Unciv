@@ -567,6 +567,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 MapType.archipelago -> createArchipelago(tileMap)
                 MapType.warpPerlin -> createWarpPerlin(tileMap)
                 MapType.diverseArchipelago -> createDiverseArchipelago(tileMap)
+                MapType.ZPerlin -> createZPerlin(tileMap)
                 MapType.default -> generateLandCellularAutomata(tileMap)
             }
         }
@@ -628,6 +629,19 @@ class MapGenerator(val ruleset: Ruleset) {
                 val weight = 4.0
 
                 val elevation = noise1 + noise2*weight-1.08
+                when {
+                    elevation < 0 -> tile.baseTerrain = Constants.ocean
+                    else -> tile.baseTerrain = Constants.grassland
+                }
+            }
+        }
+
+        private fun createZPerlin(tileMap: TileMap) {
+            val elevationSeed = RNG.nextInt().toDouble()
+            val elevationSeed2 = RNG.nextInt().toDouble()
+            for (tile in tileMap.values) {
+                var elevation = getZWarpPerlinNoise(tile, elevationSeed, elevationSeed2, scale=8.0) +0.05
+
                 when {
                     elevation < 0 -> tile.baseTerrain = Constants.ocean
                     else -> tile.baseTerrain = Constants.grassland
@@ -713,6 +727,21 @@ class MapGenerator(val ruleset: Ruleset) {
             return Perlin.normalWarpNoise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
         }
 
+        private fun getZWarpPerlinNoise(tile: TileInfo, seed1: Double, seed2: Double,
+                                        nOctaves: Int = 10,
+                                        persistence: Double = 0.5,
+                                        lacunarity: Double = 2.0,
+                                        scale: Double = 10.0): Double {
+            val worldCoords = HexMath.hex2WorldCoords(tile.position)
+            val noise1 = Perlin.noise3d(
+                    worldCoords.x.toDouble(), worldCoords.y.toDouble(),
+                    seed1, nOctaves,
+                    persistence, lacunarity, scale)
+            return Perlin.noise3d(
+                    worldCoords.x.toDouble(), worldCoords.y.toDouble(),
+                    seed2 + noise1, nOctaves,
+                    persistence, lacunarity, scale)
+        }
         // region Cellular automata
         private fun generateLandCellularAutomata(tileMap: TileMap) {
             val mapRadius = tileMap.mapParameters.size.radius

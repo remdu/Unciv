@@ -65,6 +65,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             MapType.archipelago,
             MapType.warpPerlin,
             MapType.diverseArchipelago,
+            MapType.ZPerlin,
             if (isEmptyMapAllowed) MapType.empty else null
         )
 
