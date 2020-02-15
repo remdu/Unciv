@@ -104,7 +104,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
                 val elevation = getRidgedPerlinNoise(tile, seed, scale = 10.0)
 
-                if (elevation > 0.25)
+                if (elevation > 0.3)
                     tile.baseTerrain = Constants.mountain
                 tile.setTransients()
             }
