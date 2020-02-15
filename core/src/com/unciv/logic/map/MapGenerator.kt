@@ -98,8 +98,17 @@ class MapGenerator(val ruleset: Ruleset) {
 
     private fun randomizeTiles(tileMap: TileMap) {
 
+        val seed = RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
-            if (tile.getBaseTerrain().type == TerrainType.Land && RNG.nextDouble() < tileMap.mapParameters.mountainProbability) {
+            if (tileMap.mapParameters.type == MapType.mountainRange && tile.getBaseTerrain().type == TerrainType.Land) {
+
+                val elevation = getRidgedPerlinNoise(tile, seed, scale = 10.0)
+
+                if (elevation > 0.25)
+                    tile.baseTerrain = Constants.mountain
+                tile.setTransients()
+            }
+            if (tileMap.mapParameters.type != MapType.mountainRange && tile.getBaseTerrain().type == TerrainType.Land && RNG.nextDouble() < tileMap.mapParameters.mountainProbability) {
                 tile.baseTerrain = Constants.mountain
                 tile.setTransients()
             }
@@ -567,6 +576,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 MapType.archipelago -> createArchipelago(tileMap)
                 MapType.warpPerlin -> createWarpPerlin(tileMap)
                 MapType.diverseArchipelago -> createDiverseArchipelago(tileMap)
+                MapType.mountainRange -> createMountainRange(tileMap)
                 MapType.default -> generateLandCellularAutomata(tileMap)
             }
         }
@@ -628,6 +638,18 @@ class MapGenerator(val ruleset: Ruleset) {
                 val weight = 4.0
 
                 val elevation = noise1 + noise2*weight-1.08
+                when {
+                    elevation < 0 -> tile.baseTerrain = Constants.ocean
+                    else -> tile.baseTerrain = Constants.grassland
+                }
+            }
+        }
+
+        private fun createMountainRange(tileMap: TileMap) {
+            val elevationSeed = RNG.nextInt().toDouble()
+            for (tile in tileMap.values) {
+                var elevation = getRidgedPerlinNoise(tile, elevationSeed) - 0.1
+
                 when {
                     elevation < 0 -> tile.baseTerrain = Constants.ocean
                     else -> tile.baseTerrain = Constants.grassland
