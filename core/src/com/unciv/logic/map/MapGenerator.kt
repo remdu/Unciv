@@ -634,18 +634,6 @@ class MapGenerator(val ruleset: Ruleset) {
             }
         }
 
-        private fun createMountainRange(tileMap: TileMap) {
-            val elevationSeed = RNG.nextInt().toDouble()
-            for (tile in tileMap.values) {
-                var elevation = getRidgedPerlinNoise(tile, elevationSeed) - 0.1
-
-                when {
-                    elevation < 0 -> tile.baseTerrain = Constants.ocean
-                    else -> tile.baseTerrain = Constants.grassland
-                }
-            }
-        }
-
         private fun createPangea(tileMap: TileMap) {
             val elevationSeed = RNG.nextInt().toDouble()
             for (tile in tileMap.values) {
