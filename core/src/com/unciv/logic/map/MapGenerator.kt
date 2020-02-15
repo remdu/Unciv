@@ -98,7 +98,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
     private fun randomizeTiles(tileMap: TileMap) {
         for (tile in tileMap.values) {
-            if (tileMap.mapParameters.type != MapType.mountainRange && tile.getBaseTerrain().type == TerrainType.Land && RNG.nextDouble() < tileMap.mapParameters.mountainProbability) {
+            if (tile.getBaseTerrain().type == TerrainType.Land && RNG.nextDouble() < tileMap.mapParameters.mountainProbability) {
                 tile.baseTerrain = Constants.mountain
                 tile.setTransients()
             }
@@ -566,7 +566,6 @@ class MapGenerator(val ruleset: Ruleset) {
                 MapType.archipelago -> createArchipelago(tileMap)
                 MapType.warpPerlin -> createWarpPerlin(tileMap)
                 MapType.diverseArchipelago -> createDiverseArchipelago(tileMap)
-                MapType.mountainRange -> createMountainRange(tileMap)
                 MapType.default -> generateLandCellularAutomata(tileMap)
             }
         }
