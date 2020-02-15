@@ -97,17 +97,7 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     private fun randomizeTiles(tileMap: TileMap) {
-
-        val seed = RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
-            if (tileMap.mapParameters.type == MapType.mountainRange && tile.getBaseTerrain().type == TerrainType.Land) {
-
-                val elevation = getRidgedPerlinNoise(tile, seed, scale = 10.0)
-
-                if (elevation > 0.3)
-                    tile.baseTerrain = Constants.mountain
-                tile.setTransients()
-            }
             if (tileMap.mapParameters.type != MapType.mountainRange && tile.getBaseTerrain().type == TerrainType.Land && RNG.nextDouble() < tileMap.mapParameters.mountainProbability) {
                 tile.baseTerrain = Constants.mountain
                 tile.setTransients()
